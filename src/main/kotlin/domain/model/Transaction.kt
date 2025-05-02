@@ -1,7 +1,7 @@
 package domain.model
 
 /*
-data class Model(
+data class Transaction(
     val id: Int,
     val name: String,
 )
