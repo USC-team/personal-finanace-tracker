@@ -8,21 +8,21 @@ fun main() {
     ///add
     val tr1 = Transaction(
         id = 1,
-        Categories(type = "expensive", id = 1, name = "Food"),
+        Categories(type = TransactionType.Expensive.name, id = 1, name = "Food"),
         description = "Food for home",
         amount = 20.0,
         timeDate = "03/05/2025"
     )
     val tr2 = Transaction(
         id = 2,
-        Categories(type = "expensive", id = 2, name = "Transfer"),
+        Categories(type = TransactionType.Expensive.name, id = 2, name = "Transfer"),
         description = "Cost of transfer",
         amount = 50.0,
         timeDate = "03/05/2025"
     )
     val tr3 = Transaction(
         id = 3,
-        Categories(type = "expensive", id = 3, name = "Rent"),
+        Categories(type = TransactionType.Expensive.name, id = 3, name = "Rent"),
         description = "Pay The Rent ",
         amount = 8.0,
         timeDate = "03/05/2025"
@@ -126,5 +126,6 @@ fun showPerMonthBalance(): Report? {
 }
 
 enum class TransactionType {
-    INCOME()
+    Income,
+    Expensive
 }
