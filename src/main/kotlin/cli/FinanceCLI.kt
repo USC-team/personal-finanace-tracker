@@ -1,3 +1,6 @@
 package cli
 
+fun main() {
+
+}
 
