@@ -3,8 +3,10 @@ package TestCases
 import domain.model.Categories
 import domain.model.Report
 import domain.model.Transaction
+import domain.useCase.TransactionUseCase
 
 fun main() {
+    val transactionUseCase : TransactionUseCase = TransactionUseCase()
     ///add
     val tr1 = Transaction(
         id = 1,
@@ -32,7 +34,7 @@ fun main() {
 
     check(
         name = "When you add transactions successfully return",
-        result = addTransaction(transactionsList),
+        result = addTransaction(transactionUseCase.add(transactionsList)),
         correctResult = true
     )
 
@@ -40,7 +42,7 @@ fun main() {
 
     check(
         name = "When you add transactions  not successfully because empty item return false",
-        result = addTransaction(transactionsList),
+        result = addTransaction(transactionUseCase.add(transactionsList)),
         correctResult = true
     )
 
@@ -99,13 +101,10 @@ fun <T> check(name: String, result: T, correctResult: T) = when {
 }
 
 
+fun addTransaction(addTransactions: Boolean): Boolean = addTransactions
+
 fun updateTransaction(transaction: Transaction?, id: Int): Boolean {
     return false
-}
-
-fun addTransaction(transactions: List<Transaction>): Boolean {
-    return false
-
 }
 
 fun deleteTransaction(id: Int): Boolean {
