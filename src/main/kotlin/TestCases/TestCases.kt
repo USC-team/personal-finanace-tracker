@@ -1,31 +1,36 @@
 package TestCases
 
 import domain.model.Categories
+import domain.model.CategoryType
 import domain.model.Report
 import domain.model.Transaction
+import java.time.LocalDateTime
 
 fun main() {
     ///add
     val tr1 = Transaction(
         id = 1,
-        Categories(type = TransactionType.Expensive.name, id = 1, name = "Food"),
+        category = Categories(type = CategoryType.Expense, id = 1, name = "Food"),
         description = "Food for home",
         amount = 20.0,
-        timeDate = "03/05/2025"
+        timeDate = LocalDateTime.of(2025,5, 3,0,0),
+        name="Sandwiches"
     )
     val tr2 = Transaction(
         id = 2,
-        Categories(type = TransactionType.Expensive.name, id = 2, name = "Transfer"),
+        category = Categories(type = CategoryType.Expense, id = 2, name = "Transfer"),
         description = "Cost of transfer",
         amount = 50.0,
-        timeDate = "03/05/2025"
+        timeDate = LocalDateTime.of(2025,5, 3,0,0),
+        name="For delivery"
     )
     val tr3 = Transaction(
         id = 3,
-        Categories(type = TransactionType.Expensive.name, id = 3, name = "Rent"),
+        category =Categories(type = CategoryType.Expense, id = 3, name = "Rent"),
         description = "Pay The Rent ",
         amount = 8.0,
-        timeDate = "03/05/2025"
+        timeDate = LocalDateTime.of(2025,5, 3,0,0),
+        name="april rent"
     )
 
     var transactionsList = listOf(tr1, tr2, tr3)
@@ -47,10 +52,11 @@ fun main() {
 
     var transactions = Transaction(
         id = 1,
-        categories = Categories(id = 1, name = "Food", type = "expensive"),
+        category = Categories(id = 1, name = "Food", type = CategoryType.Expense),
         description = "AHMED",
         amount = 100.0,
-        timeDate = "02/05/2025"
+        timeDate = LocalDateTime.of(2025,5, 3,0,0),
+        name="april rent"
     )
     check(
         name = "When update on transaction list and update successfully return false",
@@ -83,9 +89,9 @@ fun main() {
         correctResult = true
     )
 
-    var listTransact: List<Transaction> = transactionsList.filter {
-        it.timeDate.contains("05/2025")
-    }
+    var listTransact: List<Transaction> = transactionsList.
+    filter {it.timeDate.month == LocalDateTime.now().month &&
+            it.timeDate.year == LocalDateTime.now().year}
     check(name = "AdsadasDSDasdsd", result = showSummaryPerMonth(), correctResult = listTransact)
 
     val report: Report? = null
@@ -125,7 +131,7 @@ fun showPerMonthBalance(): Report? {
     return null
 }
 
-enum class TransactionType {
+enum class CategoryType {
     Income,
     Expensive
 }
