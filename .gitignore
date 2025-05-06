@@ -37,6 +37,9 @@ bin/
 
 ### VS Code ###
 .vscode/
+vcs.xml
+codeStyleConfig.xml
+Project.xml
 
 ### Mac OS ###
 .DS_Store
