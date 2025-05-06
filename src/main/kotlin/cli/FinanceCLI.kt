@@ -5,9 +5,7 @@ import domain.model.CategoryType
 import domain.model.Transaction
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.ofLocalizedDateTime
 import java.time.format.DateTimeParseException
-import java.util.*
 
 const val RED_COLOR= "\u001B[31m"
 const val MAGENTA_COLOR="\u001B[35m"
@@ -33,7 +31,7 @@ fun main() {
     val categoriesList: MutableList<Categories> = mutableListOf()
     val transactionList: MutableList<Transaction> = mutableListOf()
     val newTransactioList: MutableList<Transaction> = mutableListOf()
-    var newTransaction: Transaction?= null
+    var newTransaction: Transaction?
     categoriesList.add(Categories(id = 1, name = "Food", type = CategoryType.Expense))
 
     println("$MAGENTA_COLOR***Welcome in USC Personal Finance Tracker***$RESETCOLOR\n")
@@ -46,7 +44,7 @@ fun main() {
                     "\t 4) Show the List of Available Reports\n" +
                     "\t 0) Exit"
         )
-        var choice = readln()
+        val choice = readln()
         when (choice) {
             "0" ->{
                 println("$MAGENTA_COLOR Bye Bye! See you again! $RESETCOLOR\n")
@@ -54,30 +52,15 @@ fun main() {
             }
             "1" -> {
                 newTransaction = addNewTransaction(categoriesList, transactionList)
-                if (newTransaction != null) {
-                    newTransactioList.add(newTransaction)
-                    transactionList.add(newTransaction)
-                    break
-                }
-                else{
-                    println("$RED_COLOR Something went wrong!\n" +
-                            "We couldn't save your transaction.\n" +
-                            "Try Again!$RESETCOLOR")
-                }
+                newTransactioList.add(newTransaction)
+                transactionList.add(newTransaction)
+                break
             }
             "2" ->{
                 if(transactionList.isNotEmpty()) {
                     newTransaction = editTransaction(categoriesList, transactionList)
-                    if (newTransaction != null) {
-                        replaceTransaction(transactionList, newTransaction.id, newTransaction!!)
-                        break
-                    } else {
-                        println(
-                            "$RED_COLOR Something went wrong!\n" +
-                                    "We couldn't edit your transaction.\n" +
-                                    "Try Again!$RESETCOLOR"
-                        )
-                    }
+                    replaceTransaction(transactionList, newTransaction.id, newTransaction)
+                    break
                 }
                 else {
                     println(
@@ -89,16 +72,8 @@ fun main() {
             "3"-> {
                 if (transactionList.isNotEmpty()) {
                     newTransaction = deleteTransaction(transactionList)
-                    if (newTransaction != null) {
-                        transactionList.remove(newTransaction)
-                        break
-                    } else {
-                        println(
-                            "$RED_COLOR Something went wrong!\n" +
-                                    "We couldn't delete your transaction.\n" +
-                                    "Try Again!$RESETCOLOR"
-                        )
-                    }
+                    transactionList.remove(newTransaction)
+                    break
                 } else {
                     println(
                         "$RED_COLOR You don't have transactions Yet!\n" +
@@ -131,44 +106,26 @@ fun replaceTransaction(
 }
 fun addNewTransaction(categoriesList:MutableList<Categories>, transactionList:MutableList<Transaction>) :Transaction {
 
-    var newTransaction: Transaction? = null
-    var transactionCategory: Categories? = null
-    var transactionName:String? = null
-    var transactionDescription:String? = null
-    var transactionAmount: Double = 0.0
-    var transactionDateTimeConverted: LocalDateTime
-    var transactionDateTime: String = ""
-    var transactionId = transactionList.lastIndex + 2
-
     println("$GREEN_COLOR You want to add a new transaction! $RESETCOLOR\n")
     println("First Things First!")
-
+    val transactionId = transactionList.lastIndex + 2
     //enter Category ID
-    transactionCategory=chooseCategory(categoriesList)
-    transactionName=enterTransactionName()
-    transactionDescription = enterTransactionDescription()
-    transactionAmount=enterTransactionAmount()
-    transactionDateTimeConverted=enterTransactionDateTime()
+    val transactionCategory=chooseCategory(categoriesList)
+    val transactionName=enterTransactionName()
+    val transactionDescription = enterTransactionDescription()
+    val transactionAmount=enterTransactionAmount()
+    val transactionDateTimeConverted=enterTransactionDateTime()
     //creating the transaction
-    newTransaction= createTransaction(transactionId, transactionName, transactionDescription,
+    val newTransaction= createTransaction(transactionId, transactionName, transactionDescription,
         transactionDateTimeConverted,transactionAmount,transactionCategory)
 
-    return newTransaction ?: throw IllegalStateException("Transaction creation failed.")
+    return newTransaction
 }
 
 fun showCategoriesList(categoriesList: MutableList<Categories>) {
     for (category in categoriesList) {
         println("${category.id}     ${category.name}      ${category.type.name}")
     }
-}
-
-fun getCategoryById(categoriesList: MutableList<Categories>, categoryId:Int):Categories? {
-    for (category in categoriesList) {
-        if (categoryId == category.id) {
-            return category
-        }
-    }
-    return null
 }
 fun enterTransactionName():String{
     println("Enter transaction name: ")
@@ -210,13 +167,7 @@ fun enterTransactionDateTime():LocalDateTime{
                 transactionDateTime,
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
             )
-            if (transactionDateTimeConverted!=null){
-                return transactionDateTimeConverted
-            }
-            else {
-                println("$RED_COLOR Not a valid date\n" +
-                        "Try Again!$RESETCOLOR")
-            }
+            return transactionDateTimeConverted
         } catch (e: DateTimeParseException) {
             println(
                 "$RED_COLOR ${e.message}\n " +
@@ -236,16 +187,12 @@ fun createTransaction(transactionId:Int, transactionName:String, transactionDesc
             description = transactionDescription,
             timeDate = transactionDateTimeConverted,
             amount = transactionAmount,
-            category = transactionCategory!!
+            category = transactionCategory
         )
 
         println(
             "$GREEN_COLOR Voilà! Your transaction is stored successfully!\n" +
-                    "Transaction ID:           ${transactionId}\n" +
-                    "Transaction Name:         $transactionName\n" +
-                    "Transaction Description:  $transactionDescription\n" +
-                    "Transaction Amount:       $transactionAmount\n" +
-                    "Transaction Date and Time:$transactionDateTimeConverted\n$RESETCOLOR"
+                    showTransactionDetails(newTransaction)+ RESETCOLOR
         )
 
     } catch (e: Exception) {
@@ -257,11 +204,11 @@ fun createTransaction(transactionId:Int, transactionName:String, transactionDesc
     return newTransaction ?: throw IllegalStateException("Transaction creation failed.")
 }
 fun editTransaction(categoriesList: MutableList<Categories>, transactionList: MutableList<Transaction>): Transaction {
-    var updatedTransaction:Transaction?=null
+    var updatedTransaction:Transaction?
     var updatedTransactionCategory: Categories? = null
     var updatedTransactionName:String? = null
     var updatedTransactionDescription:String? = null
-    var updatedTransactionAmount: Double = 0.0
+    var updatedTransactionAmount = 0.0
     var updatedTransactionDateTimeConverted: LocalDateTime?=null
 
     println("$GREEN_COLOR You want to edit a transaction! $RESETCOLOR\n")
@@ -290,41 +237,31 @@ fun editTransaction(categoriesList: MutableList<Categories>, transactionList: Mu
     if(readln().trim().uppercase() =="Y"){
         updatedTransactionDateTimeConverted= enterTransactionDateTime()
     }
-    if(updatedTransaction!=null)
-    {
-        if(updatedTransactionName==null){
-            updatedTransactionName=updatedTransaction.name
-        }
-        if(updatedTransactionDescription==null){
-            updatedTransactionDescription=updatedTransaction.description
-        }
-        if(updatedTransactionAmount==0.0){
-            updatedTransactionAmount=updatedTransaction.amount
-        }
-        if(updatedTransactionCategory==null){
-            updatedTransactionCategory=updatedTransaction.category
-        }
-        if(updatedTransactionDateTimeConverted==null){
-            updatedTransactionDateTimeConverted=updatedTransaction.timeDate
-        }
-        updatedTransaction=createTransaction(updatedTransaction.id, updatedTransactionName,
-            updatedTransactionDescription, updatedTransactionDateTimeConverted, updatedTransactionAmount,
-            updatedTransactionCategory)
+    if(updatedTransactionName==null){
+        updatedTransactionName=updatedTransaction.name
     }
-    return updatedTransaction?: throw IllegalStateException("Transaction edition failed.")
+    if(updatedTransactionDescription==null){
+        updatedTransactionDescription=updatedTransaction.description
+    }
+    if(updatedTransactionAmount==0.0){
+        updatedTransactionAmount=updatedTransaction.amount
+    }
+    if(updatedTransactionCategory==null){
+        updatedTransactionCategory=updatedTransaction.category
+    }
+    if(updatedTransactionDateTimeConverted==null){
+        updatedTransactionDateTimeConverted=updatedTransaction.timeDate
+    }
+    updatedTransaction=createTransaction(updatedTransaction.id, updatedTransactionName,
+        updatedTransactionDescription, updatedTransactionDateTimeConverted, updatedTransactionAmount,
+        updatedTransactionCategory)
+
+    return updatedTransaction
 }
 fun showTransactionList(transactionList: MutableList<Transaction>){
     for (transaction in transactionList) {
         println("${transaction.id}     ${transaction.name}      ${transaction.amount}")
     }
-}
-fun getTransactionById(transactionList: MutableList<Transaction>, transactionId:Int):Transaction?{
-    for (transaction in transactionList) {
-        if (transactionId == transaction.id) {
-            return transaction
-        }
-    }
-    return null
 }
 fun showTransactionDetails(transaction: Transaction){
     println("Transaction ID:           ${transaction.id} \n" +
@@ -333,13 +270,13 @@ fun showTransactionDetails(transaction: Transaction){
             "Transaction Amount:       ${transaction.amount}\n" +
             "Transaction Date and Time:${transaction.timeDate}\n")
 }
-fun chooseTransaction(transactionList: MutableList<Transaction>):Transaction?{
+fun chooseTransaction(transactionList: MutableList<Transaction>):Transaction{
     while (true) {
         try {
-            var transactionIdToBeEdited = readln().trim().toInt()
+            val transactionIdToBeEdited = readln().trim().toInt()
             val theTransaction= transactionList.filter { it-> it.id== transactionIdToBeEdited}
             //val theTransaction= getTransactionById(transactionList, transactionIdToBeEdited)
-            if(theTransaction!=null) {
+            if(theTransaction.isNotEmpty()) {
                 return theTransaction[0]
             }
             else{
@@ -359,10 +296,10 @@ fun chooseCategory(categoriesList:MutableList<Categories>):Categories{
     showCategoriesList(categoriesList)
     while (true) {
         try {
-            var categoryId = readln().trim().toInt()
+            val categoryId = readln().trim().toInt()
             val theCategory=categoriesList.filter { it-> it.id==categoryId }
             //getCategoryById(categoriesList, categoryId)
-            if(theCategory!=null) {
+            if(theCategory.isNotEmpty()) {
                 return theCategory[0]
             }
             else{
@@ -381,7 +318,7 @@ fun deleteTransaction(transactionList: MutableList<Transaction>):Transaction{
     println("$RED_COLOR You want to delete a transaction! $RESETCOLOR\n")
     println("So! let's start by choosing the transaction's ID you want to delete")
     showTransactionList(transactionList)
-    return chooseTransaction(transactionList)!!
+    return chooseTransaction(transactionList)
 }
 fun reportsCli(){
     println("Here's a List of Reports That You Can Explore!\n" +
@@ -398,7 +335,7 @@ fun categoriesCli(){
                 "\t 2) Transactions\n" +
                 "\t 0) Exit"
     )
-    var choice1 = readln()
+    val choice1 = readln()
     when (choice1) {
         "1" -> {
             println("$MAGENTA_COLOR Great! Let's see what exactly you are thinking of! $RESETCOLOR\n")
