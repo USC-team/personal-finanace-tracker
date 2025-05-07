@@ -8,7 +8,7 @@ import domain.repository.TransactionRepository
 
 class TransactionRepositoryImp : TransactionRepository {
     var transactionsList: MutableList<Transaction> = mutableListOf()
-    val categoriesList=listOf(
+    val categoriesList = listOf(
         Categories(id = 1, name = "Food", type = CategoryType.Expense.name),
         Categories(id = 2, name = "Rent", type = CategoryType.Expense.name),
         Categories(id = 3, name = "Salary", type = CategoryType.Income.name)
@@ -43,9 +43,10 @@ class TransactionRepositoryImp : TransactionRepository {
     }
 
     override fun getAllTransactions(): List<Transaction> = transactionsList
-    override fun getCategories():List<Categories>{
+    override fun getCategories(): List<Categories> {
         return categoriesList
     }
+
     override fun getMonthlyReport(year: String, month: String): Report {
         val targetMonth = month.padStart(2, '0')
         val filteredTransactions = getAllTransactions().filter { transaction ->
@@ -59,6 +60,7 @@ class TransactionRepositoryImp : TransactionRepository {
 
         return Report(totalIncome = income, totalExpense = expense, balance = balance)
     }
+
     override fun getMonthlyBalance(year: String, month: String): Double {
         val targetMonth = month.padStart(2, '0')
         return getAllTransactions()
@@ -67,6 +69,16 @@ class TransactionRepositoryImp : TransactionRepository {
                         transaction.date.month.padStart(2, '0') == targetMonth
             }
             .sumOf { it.amount }
+    }
+
+    override fun deleteAllTransactions(): Boolean {
+        transactionsList.clear()
+        return transactionsList.isEmpty()
+    }
+
+    override fun getTransactionDetails(id: Int): Boolean {
+        val transaction = transactionsList.firstOrNull { it.id == id }
+        return transaction != null
     }
 
 }

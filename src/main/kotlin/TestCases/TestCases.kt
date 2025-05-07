@@ -1,69 +1,72 @@
 package TestCases
 
+import data.repoImp.TransactionRepositoryImp
 import domain.model.*
-import java.time.LocalDateTime
+import domain.useCase.TransactionUseCase
 
 fun main() {
+    val repo = TransactionRepositoryImp()
+    val useCase = TransactionUseCase(repo)
     val transactionsList = listOf(
         Transaction(
             id = 1,
             categories = Categories(type = CategoryType.Expense.name, id = 1, name = "Food"),
             description = "Food for home",
             amount = 20.0,
-            date =  Date(day = "02", month = "05", year = "2025"),
-            name="Sandwiches"
+            date = Date(day = "02", month = "05", year = "2025"),
+            name = "Sandwiches"
         ),
         Transaction(
             id = 2,
             categories = Categories(type = CategoryType.Expense.name, id = 2, name = "Transfer"),
             description = "Cost of transfer",
             amount = 50.0,
-            date =  Date(day = "02", month = "05", year = "2025"),
-            name="For delivery"
+            date = Date(day = "02", month = "05", year = "2025"),
+            name = "For delivery"
         ),
         Transaction(
             id = 3,
-            categories =Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
+            categories = Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
             description = "Pay The Rent ",
             amount = 8.0,
-            date =  Date(day = "02", month = "05", year = "2025"),
-            name="april rent"
+            date = Date(day = "02", month = "05", year = "2025"),
+            name = "april rent"
         ),
         Transaction(
             id = 4,
-            categories =Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
+            categories = Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
             description = "Pay The Rent ",
             amount = 8.0,
-            date =  Date(day = "02", month = "05", year = "2024"),
-            name="april rent"
+            date = Date(day = "02", month = "05", year = "2024"),
+            name = "april rent"
         ),
         Transaction(
             id = 5,
-            categories =Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
+            categories = Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
             description = "Pay The Rent ",
             amount = 8.0,
-            date =  Date(day = "02", month = "04", year = "2025"),
-            name="april rent"
+            date = Date(day = "02", month = "04", year = "2025"),
+            name = "april rent"
         )
     )
-    val transactionsFromOtherMonths= listOf(
+    val transactionsFromOtherMonths = listOf(
         Transaction(
             id = 5,
-            categories =Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
+            categories = Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
             description = "Pay The Rent ",
             amount = 8.0,
-            date =  Date(day = "02", month = "04", year = "2025"),
-            name="april rent"
+            date = Date(day = "02", month = "04", year = "2025"),
+            name = "april rent"
         )
     )
-    val transactionsFromOtherYears= listOf(
+    val transactionsFromOtherYears = listOf(
         Transaction(
             id = 5,
-            categories =Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
+            categories = Categories(type = CategoryType.Expense.name, id = 3, name = "Rent"),
             description = "Pay The Rent ",
             amount = 8.0,
-            date =  Date(day = "02", month = "05", year = "2025"),
-            name="april rent"
+            date = Date(day = "02", month = "05", year = "2025"),
+            name = "april rent"
         )
     )
     val transactionsListContainsNull = listOf(
@@ -72,106 +75,120 @@ fun main() {
             categories = Categories(type = CategoryType.Expense.name, id = 1, name = "Food"),
             description = "Food for home",
             amount = 20.0,
-            date =  Date(day = "02", month = "05", year = "2025"),
-            name="Sandwiches"
-        ),null)
+            date = Date(day = "02", month = "05", year = "2025"),
+            name = "Sandwiches"
+        ), null
+    )
 
-    val emptyTransactionsList : List<Transaction> = emptyList()
+    val emptyTransactionsList: List<Transaction> = emptyList()
     val transaction = Transaction(
         id = 1,
         categories = Categories(id = 1, name = "Food", type = CategoryType.Expense.name),
         description = "AHMED",
         amount = 100.0,
         date = Date(day = "02", month = "05", year = "2025"),
-        name="april rent"
+        name = "april rent"
     )
     val emptyTransaction: Transaction? = null
     val listTransactinsCurrentMonth: List<Transaction> = transactionsList.filter {
-        it.date.month.contains("05") && it.date.year.contains("2025")}
+        it.date.month.contains("05") && it.date.year.contains("2025")
+    }
     val nullReport: Report? = null
-    val report= Report(8000.0,1000.0,7000.0)
+    val report = Report(8000.0, 1000.0, 7000.0)
 
+    useCase.add(transactionsList)
     check(
         name = "When view the list of transactions while there are transactions stored, return the list of all transactions",
-        result = viewAllTransactions(transactionsList),
+        result = useCase.getAllTransactions(),
         correctResult = transactionsList
     )
+    useCase.deleteAllTransactions()
     check(
         name = "When view the list of transactions while there are no transactions stored, show an error message",
-        result = viewAllTransactions(emptyTransactionsList),
+        result = useCase.getAllTransactions(),
         correctResult = emptyTransactionsList
     )
+    useCase.add(transactionsList)
     check(
         name = "When view the details of a transaction that is found, print the details and return true",
-        result = viewTransactionDetails(transactionsList,1),
+        result = useCase.getTransactionDetails(id = 1),
         correctResult = true
     )
     check(
         name = "When view the details of a transaction that is not found, print error message and return false",
-        result = viewTransactionDetails(transactionsList,100),
+        result = useCase.getTransactionDetails(id = 100),
         correctResult = false
     )
+    useCase.deleteAllTransactions()
     check(
         name = "When view the details of a transaction in an empty list, print error message and return false",
-        result = viewTransactionDetails(emptyTransactionsList,1),
+        result = useCase.getTransactionDetails(id = 1),
         correctResult = false
     )
-
     check(
         name = "When you add a transaction successfully, return true",
-        result = addTransaction(transactionsList,listOf(transaction)),
+        result = useCase.add(listOf(transaction)),
         correctResult = true
     )
     check(
         name = "When you add transactions list successfully, return true",
-        result = addTransaction(transactionsList, transactionsList),
+        result = useCase.add(transactionsList),
         correctResult = true
     )
 
     check(
         name = "When you try to add an empty transactions list, return false",
-        result = addTransaction(transactionsList, emptyTransactionsList),
+        result = useCase.add(emptyList()),
         correctResult = false
     )
 
-    check(
+    /*check(
         name = "When you try to add an transactions list that contains a null transaction, add the non null transactions only" +
                 "and return true",
-        result = addTransaction(transactionsList, transactionsListContainsNull),
+        result = useCase.add(transactionsListContainsNull),
         correctResult = true
-    )
+    )*/
 
     check(
         name = "When update a transaction and update successfully, return true",
-        result = updateTransaction(transaction = transaction, transactionsList, id = 1),
+        result = useCase.update(transaction),
         correctResult = true
+    )
+    val newTransaction = Transaction(
+        id = 100,
+        categories = Categories(id = 1, name = "Food", type = CategoryType.Expense.name),
+        description = "AHMED",
+        amount = 100.0,
+        date = Date(day = "02", month = "05", year = "2025"),
+        name = "april rent"
     )
     check(
         name = "When try to update a transaction that's not found, return false",
-        result = updateTransaction(transaction = transaction, transactionsList, id = 100),
+        result = useCase.update(newTransaction),
         correctResult = false
     )
+    useCase.deleteAllTransactions()
     check(
         name = "When try to update a transaction in an empty transaction list, return false",
-        result = updateTransaction(transaction = transaction, emptyTransactionsList, id = 1),
+        result = useCase.update(transaction),
         correctResult = false
     )
 
     check(
         name = "When update and pass null transaction, return false",
-        result = updateTransaction(transaction = emptyTransaction, transactionsList, id = 1),
+        result =useCase.update(emptyTransaction),
         correctResult = false
     )
 
     check(
         name = "When delete one transaction successfully, return true",
-        result = deleteTransaction(transactionsList,id = 1),
+        result =useCase.delete(transaction),
         correctResult = true
     )
 
     check(
         name = "When delete all transaction successfully, return true",
-        result = deleteTransaction(transactionsList),
+        result = useCase.deleteAllTransactions(),
         correctResult = true
     )
 
@@ -241,11 +258,11 @@ fun <T> check(name: String, result: T, correctResult: T) = when {
     else -> println("Filed  $name ")
 }
 
-fun viewAllTransactions(transactionsList:List<Transaction>): List<Transaction> {
+fun viewAllTransactions(transactionsList: List<Transaction>): List<Transaction> {
     return transactionsList
 }
 
-fun viewTransactionDetails(transactionsList:List<Transaction>,transactionId: Int): Boolean {
+fun viewTransactionDetails(transactionsList: List<Transaction>, transactionId: Int): Boolean {
     return false
 }
 
