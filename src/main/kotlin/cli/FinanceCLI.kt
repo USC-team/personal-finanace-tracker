@@ -13,7 +13,7 @@ const val MAGENTA_COLOR="\u001B[35m"
 const val GREEN_COLOR= "\u001B[32m"
 const val RESETCOLOR= "\u001B[0m"
 
-fun addNewTransaction(categoriesList:MutableList<Categories>, transactionList:MutableList<Transaction>) :Transaction {
+fun addNewTransaction(categoriesList:List<Categories>, transactionList:List<Transaction>) :Transaction {
 
     println("$GREEN_COLOR You want to add a new transaction! $RESETCOLOR\n")
     println("First Things First!")
@@ -30,7 +30,7 @@ fun addNewTransaction(categoriesList:MutableList<Categories>, transactionList:Mu
 
     return newTransaction
 }
-fun editTransaction(categoriesList: MutableList<Categories>, transactionList: MutableList<Transaction>): Transaction {
+fun editTransaction(categoriesList: List<Categories>, transactionList: List<Transaction>): Transaction {
     var updatedTransaction:Transaction?
     var updatedTransactionCategory: Categories? = null
     var updatedTransactionName:String? = null
@@ -85,14 +85,14 @@ fun editTransaction(categoriesList: MutableList<Categories>, transactionList: Mu
 
     return updatedTransaction
 }
-fun deleteTransaction(transactionList: MutableList<Transaction>):Transaction{
+fun deleteTransaction(transactionList: List<Transaction>):Transaction{
     println("$RED_COLOR You want to delete a transaction! $RESETCOLOR\n")
     println("So! let's start by choosing the transaction's ID you want to delete")
     showTransactionList(transactionList)
     return chooseTransaction(transactionList)
 }
 
-fun reportsCli(transactionList: MutableList<Transaction>, monthlySummary : MutableList<Transaction>, report: Report){
+fun reportsCli(transactionList: List<Transaction>, monthlySummary : List<Transaction>, report: Report){
     while (true) {
         println(
             "Here's a List of Reports That You Can Explore!\n" +
@@ -223,12 +223,12 @@ fun replaceTransaction(
         println("Transaction with ID $transactionId not found.")
     }
 }
-fun showCategoriesList(categoriesList: MutableList<Categories>) {
+fun showCategoriesList(categoriesList: List<Categories>) {
     for (category in categoriesList) {
         println("${category.id}     ${category.name}      ${category.type}")
     }
 }
-fun showTransactionList(transactionList: MutableList<Transaction>){
+fun showTransactionList(transactionList: List<Transaction>){
     for (transaction in transactionList) {
         println("${transaction.id}     ${transaction.name}      ${transaction.amount}")
     }
@@ -240,7 +240,7 @@ fun showTransactionDetails(transaction: Transaction){
             "Transaction Amount:       ${transaction.amount}\n" +
             "Transaction Date and Time:${transaction.date}\n")
 }
-fun chooseTransaction(transactionList: MutableList<Transaction>):Transaction{
+fun chooseTransaction(transactionList: List<Transaction>):Transaction{
     while (true) {
         try {
             val transactionIdToBeEdited = readln().trim().toInt()
@@ -261,7 +261,7 @@ fun chooseTransaction(transactionList: MutableList<Transaction>):Transaction{
         }
     }
 }
-fun chooseCategory(categoriesList:MutableList<Categories>):Categories{
+fun chooseCategory(categoriesList:List<Categories>):Categories{
     println("Enter the number of the category:\n")
     showCategoriesList(categoriesList)
     while (true) {

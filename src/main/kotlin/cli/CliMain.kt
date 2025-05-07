@@ -1,9 +1,12 @@
 package cli
 
+import data.repoImp.TransactionRepositoryImp
 import domain.model.Categories
 import domain.model.CategoryType
 import domain.model.Report
 import domain.model.Transaction
+import domain.repository.TransactionRepository
+import domain.useCase.TransactionUseCase
 
 fun main() {
     /**
@@ -19,14 +22,17 @@ fun main() {
      * and there should be a function
      */
     //initially I'm dealing directly with the models which I know is wrong!
+    val repo= TransactionRepositoryImp()
+    val transactionUseCase = TransactionUseCase(repo)
 
-    val categoriesList: MutableList<Categories> = mutableListOf()
-    val transactionList: MutableList<Transaction> = mutableListOf()
-    val newTransactioList: MutableList<Transaction> = mutableListOf()
-    val report= Report(1000.0,600.0,400.0)
-    val monthlySummary: MutableList<Transaction> = mutableListOf()
+    val categoriesList=transactionUseCase.getCategories()
+    val transactionList=transactionUseCase.getAllTransactions()
 
-    categoriesList.add(Categories(id = 1, name = "Food", type = CategoryType.Expense.name))
+    val report= transactionUseCase.getMonthlyReport("2025","05")
+    val monthlySummary= transactionUseCase.getMonthlyTransactions("2025","05")
+
+
+    //categoriesList.add(Categories(id = 1, name = "Food", type = CategoryType.Expense.name))
 
     println("$MAGENTA_COLOR***Welcome in USC Personal Finance Tracker***$RESETCOLOR\n")
     while (true) {
@@ -42,19 +48,27 @@ fun main() {
         when (choice) {
             "0" ->{
                 println("$MAGENTA_COLOR Bye Bye! See you again! $RESETCOLOR\n")
+                //val transactionUseCase: TransactionUseCase= TransactionUseCase(TransactionRepository)
+
                 return
             }
             "1" -> {
                 val transactionToBeAdded = addNewTransaction(categoriesList, transactionList)
-                newTransactioList.add(transactionToBeAdded)
-                transactionList.add(transactionToBeAdded)
-                break
+                if(transactionUseCase.add(listOf(transactionToBeAdded))){
+                    break
+                }
+                else {
+                    println(
+                        "$RED_COLOR Error happened we couldn't save the transaction!\n$RESETCOLOR"
+                    )
+                }
             }
             "2" ->{
                 if(transactionList.isNotEmpty()) {
                     val transactionToBeEdited = editTransaction(categoriesList, transactionList)
-                    replaceTransaction(transactionList, transactionToBeEdited.id, transactionToBeEdited)
-                    break
+                    if(transactionUseCase.update(transactionToBeEdited)) {
+                        break
+                    }
                 }
                 else {
                     println(
@@ -66,8 +80,9 @@ fun main() {
             "3"-> {
                 if (transactionList.isNotEmpty()) {
                     val transactionToBeDeleted = deleteTransaction(transactionList)
-                    transactionList.remove(transactionToBeDeleted)
-                    break
+                    if(transactionUseCase.delete(transactionToBeDeleted)) {
+                        break
+                    }
                 } else {
                     println(
                         "$RED_COLOR You don't have transactions Yet!\n" +
