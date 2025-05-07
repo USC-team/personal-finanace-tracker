@@ -1,13 +1,11 @@
 package domain.model
 
-import java.time.LocalDateTime
-
 data class Transaction(
-    val id: Int,
+    var id: Int,
     val name: String,
-    val category: Categories,
-    val description : String,
-    val amount : Double,
-    val timeDate: LocalDateTime,
+    var categories: Categories,
+    var description : String,
+    var amount : Double,
+    var timeDate: String,
 //    val transaction: MutableList<Transaction>
 )
