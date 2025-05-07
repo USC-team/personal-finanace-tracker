@@ -3,6 +3,7 @@ package TestCases
 import data.repoImp.TransactionRepositoryImp
 import domain.model.Categories
 import domain.model.CategoryType
+import domain.model.Date
 import domain.model.Report
 import domain.model.Transaction
 import domain.useCase.TransactionUseCase
@@ -12,27 +13,27 @@ fun main() {
     ///add
     val tr1 = Transaction(
         id = 1,
-        categories =  Categories(type = TransactionType.Expensive.name, id = 1, name = "Food"),
+        categories = Categories(type = CategoryType.Income.name, id = 1, name = "Food"),
         description = "Food for home",
         amount = 20.0,
-        timeDate = LocalDateTime.of(2025,5, 3,0,0),
-        name="Sandwiches"
+        date = Date(day = "02", month = "05", year = "2025"),
+        name = "Sandwiches"
     )
     val tr2 = Transaction(
         id = 2,
-        categories = Categories(type = TransactionType.Expensive.name, id = 2, name = "Transfer"),
+        categories = Categories(type = CategoryType.Expense.name, id = 2, name = "Transfer"),
         description = "Cost of transfer",
         amount = 50.0,
-        timeDate = LocalDateTime.of(2025,5, 3,0,0),
-        name="For delivery"
+        date = Date(day = "02", month = "05", year = "2025"),
+        name = "For delivery"
     )
     val tr3 = Transaction(
         id = 3,
-        categories = Categories(type = TransactionType.Expensive.name, id = 3, name = "Rent"),
+        categories = Categories(type = CategoryType.Income.name, id = 3, name = "Rent"),
         description = "Pay The Rent ",
         amount = 8.0,
-        timeDate = LocalDateTime.of(2025,5, 3,0,0),
-        name="april rent"
+        date = Date(day = "02", month = "05", year = "2025"),
+        name = "april rent"
     )
 
     var transactionsList = listOf(tr1, tr2, tr3)
@@ -52,18 +53,16 @@ fun main() {
     )
 
 
-
-
     /**
      * Update one transaction
-    */
+     */
     var transactions = Transaction(
         id = 6,
-        categories = Categories(id = 1, name = "Food", type = "expensive"),
+        categories = Categories(id = 1, name = "Food", type = CategoryType.Expense.name),
         description = "AHMED",
         amount = 100.0,
-        timeDate = LocalDateTime.of(2025,5, 3,0,0),
-        name="april rent"
+        date = Date(day = "02", month = "05", year = "2025"),
+        name = "april rent"
     )
     check(
         name = "When update on transaction list and update successfully return false",
@@ -79,13 +78,13 @@ fun main() {
     )
 
 
-
     var trDelete = Transaction(
         id = 6,
         categories = Categories(id = 1, name = "Food", type = "expensive"),
         description = "AHMED",
         amount = 100.0,
-        timeDate = "02/05/2025"
+        date = Date(day = "02", month = "05", year = "2025"),
+        name = "april rent"
     )
     check(
         name = "When delete one transaction successfully return true",
@@ -94,13 +93,13 @@ fun main() {
     )
 
 
- /*   var listTransact: List<Transaction> = transactionsList.filter {
-        it.timeDate.contains("05/2025")
+    var listTransact: List<Transaction> = transactionsList.filter {
+        it.date.month.contains("05")
     }
     check(name = "AdsadasDSDasdsd", result = showSummaryPerMonth(), correctResult = listTransact)
 
     val report: Report? = null
-    check(name = "When No transaction found ", result = showPerMonthBalance(), correctResult = report)*/
+    check(name = "When No transaction found ", result = transactionUseCase.getMonthlyReport(year = "2025", month = "02"), correctResult = report)
 }
 
 
@@ -121,16 +120,10 @@ fun deleteTransaction(deleteTransaction: Boolean): Boolean {
 }
 
 
-
 fun showSummaryPerMonth(): List<Transaction> {
     return emptyList()
 }
 
 fun showPerMonthBalance(): Report? {
     return null
-}
-
-enum class CategoryType {
-    Income,
-    Expensive
 }

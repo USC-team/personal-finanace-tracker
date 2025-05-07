@@ -1,7 +1,7 @@
 package domain.model
 
 data class Categories(
-    val type : CategoryType,
+    val type: String,
     val id: Int,
-    val name : String
+    val name: String
 )
