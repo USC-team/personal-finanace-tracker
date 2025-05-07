@@ -1,7 +1,6 @@
 package cli
 
 import domain.model.Categories
-import domain.model.CategoryType
 import domain.model.Report
 import domain.model.Transaction
 import java.time.LocalDateTime
@@ -12,9 +11,6 @@ const val RED_COLOR= "\u001B[31m"
 const val MAGENTA_COLOR="\u001B[35m"
 const val GREEN_COLOR= "\u001B[32m"
 const val RESETCOLOR= "\u001B[0m"
-
-
-
 
 fun addNewTransaction(categoriesList:MutableList<Categories>, transactionList:MutableList<Transaction>) :Transaction {
 
